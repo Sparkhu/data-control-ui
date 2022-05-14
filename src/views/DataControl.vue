@@ -114,19 +114,19 @@
         </div>
       </div>
     </div>
-    <DeleteModal
+    <SaveModal
       v-if="showDeleteModal"
       @close="showDeleteModal = false"
       @save="saveSafeOption"
-    ></DeleteModal>
+    ></SaveModal>
   </div>
 </template>
 
 <script>
-import DeleteModal from "../components/DeleteModal.vue";
+import SaveModal from "../components/SaveModal.vue";
 export default {
   components: {
-    DeleteModal,
+    SaveModal,
   },
   data() {
     return {
