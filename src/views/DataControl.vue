@@ -8,7 +8,7 @@
           HDFS 데이터의 보존 기간 및 분석 기간을 설정합니다.
         </div>
       </div>
-      <div class="sub-header">데이터 보존 기간 설정</div>
+      <div class="sub-header">데이터 폐기 기간 설정</div>
       <div class="save-setting">
         <div class="start-box">
           <div>시작일</div>
@@ -63,7 +63,75 @@
         </div>
         <div class="save-box">
           <div>저장</div>
-          <button type="button" class="btn btn-primary" @click="showDeleteModal = true">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="showDeleteModal = true"
+          >
+            저장하기
+          </button>
+        </div>
+      </div>
+      <div class="sub-header">데이터 백업 기간 설정</div>
+      <div class="save-setting">
+        <div class="start-box">
+          <div>시작일</div>
+          <input type="date" v-model="currStart" />
+        </div>
+
+        <div class="period-box">
+          <div>기간</div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="currPeriod = 1"
+            v-bind:class="{ unclicked: currPeriod != 1 }"
+          >
+            1년
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="currPeriod = 2"
+            v-bind:class="{ unclicked: currPeriod != 2 }"
+          >
+            2년
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="currPeriod = 3"
+            v-bind:class="{ unclicked: currPeriod != 3 }"
+          >
+            3년
+          </button>
+        </div>
+        <div class="condition-box">
+          <div>조건</div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="currCondition = 0"
+            v-bind:class="{ unclicked: currCondition != 0 }"
+          >
+            백업
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="currCondition = 1"
+            v-bind:class="{ unclicked: currCondition != 1 }"
+          >
+            폐기
+          </button>
+        </div>
+        <div class="save-box">
+          <div>저장</div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="showDeleteModal = true"
+          >
             저장하기
           </button>
         </div>
@@ -77,7 +145,9 @@
             type="button"
             class="btn btn-primary"
             @click="currAnalPeriod = 1"
-            v-bind:class="{ unclicked: currAnalPeriod != 1 }"
+            v-bind:class="{
+              unclicked: currAnalPeriod != 1,
+            }"
           >
             Weekly
           </button>
@@ -85,7 +155,9 @@
             type="button"
             class="btn btn-primary"
             @click="currAnalPeriod = 2"
-            v-bind:class="{ unclicked: currAnalPeriod != 2 }"
+            v-bind:class="{
+              unclicked: currAnalPeriod != 2,
+            }"
           >
             Monthly
           </button>
@@ -93,7 +165,9 @@
             type="button"
             class="btn btn-primary"
             @click="currAnalPeriod = 3"
-            v-bind:class="{ unclicked: currAnalPeriod != 3 }"
+            v-bind:class="{
+              unclicked: currAnalPeriod != 3,
+            }"
           >
             Quarterly
           </button>
@@ -101,14 +175,20 @@
             type="button"
             class="btn btn-primary"
             @click="currAnalPeriod = 4"
-            v-bind:class="{ unclicked: currAnalPeriod != 4 }"
+            v-bind:class="{
+              unclicked: currAnalPeriod != 4,
+            }"
           >
             Yearly
           </button>
         </div>
         <div class="save-box">
           <div>저장</div>
-          <button type="button" class="btn btn-primary" @click="showDeleteModal = true">
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="showDeleteModal = true"
+          >
             저장하기
           </button>
         </div>
@@ -174,16 +254,16 @@ export default {
   background-color: rgba(188, 208, 224, 0.085);
 }
 .save-setting {
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .default-btn {
   background-color: #667693;
 }
 .sub-header {
-  margin-top: 40px;
+  margin-top: 20px;
   margin-left: 60px;
-  font-size: 20px;
+  font-size: 17px;
   margin-bottom: 5px;
 }
 button {
@@ -229,7 +309,7 @@ button {
   margin-left: 30px;
 }
 .analysis-setting .period-box button {
-  width: 120px;
+  width: 118px;
 }
 
 .analysis-setting .save-box {
