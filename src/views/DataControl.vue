@@ -42,25 +42,6 @@
             3년
           </button>
         </div>
-        <div class="condition-box">
-          <div>조건</div>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currCondition = 0"
-            v-bind:class="{ unclicked: currCondition != 0 }"
-          >
-            백업
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currCondition = 1"
-            v-bind:class="{ unclicked: currCondition != 1 }"
-          >
-            폐기
-          </button>
-        </div>
         <div class="save-box">
           <div>저장</div>
           <button
@@ -104,25 +85,6 @@
             v-bind:class="{ unclicked: currPeriod != 3 }"
           >
             3년
-          </button>
-        </div>
-        <div class="condition-box">
-          <div>조건</div>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currCondition = 0"
-            v-bind:class="{ unclicked: currCondition != 0 }"
-          >
-            백업
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currCondition = 1"
-            v-bind:class="{ unclicked: currCondition != 1 }"
-          >
-            폐기
           </button>
         </div>
         <div class="save-box">
