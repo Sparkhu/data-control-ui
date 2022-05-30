@@ -7,95 +7,100 @@
         <div class="table-main__content-intro">
           HDFS 데이터의 보존 기간 및 분석 기간을 설정합니다.
         </div>
-      </div>
-      <div class="sub-header">데이터 폐기 기간 설정</div>
-      <div class="save-setting">
-        <div class="start-box">
-          <div>시작일</div>
-          <input type="date" v-model="currStart" />
-        </div>
-
-        <div class="period-box">
-          <div>기간</div>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currPeriod = 1"
-            v-bind:class="{ unclicked: currPeriod != 1 }"
-          >
-            1년
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currPeriod = 2"
-            v-bind:class="{ unclicked: currPeriod != 2 }"
-          >
-            2년
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currPeriod = 3"
-            v-bind:class="{ unclicked: currPeriod != 3 }"
-          >
-            3년
-          </button>
-        </div>
         <div class="save-box">
-          <div>저장</div>
+          <div>전체 저장</div>
           <button
             type="button"
             class="btn btn-primary"
-            @click="showDeleteModal = true"
+            @click="showSaveModal = true"
           >
             저장하기
           </button>
+        </div>
+      </div>
+
+      <div class="sub-header">데이터 폐기 기간 설정</div>
+
+      <div class="save-setting">
+        <div class="policy-box">
+          <div>정책</div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="hasDisposalPolicy = false"
+            v-bind:class="{
+              unclicked: hasDisposalPolicy != false,
+            }"
+          >
+            정책없음
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="hasDisposalPolicy = true"
+            v-bind:class="{
+              unclicked: hasDisposalPolicy != true,
+            }"
+          >
+            기간설정
+          </button>
+        </div>
+        <div class="period-box">
+          <div>기간</div>
+          <input
+            type="text"
+            class="number-input"
+            v-model="disposalPeriod"
+            :disabled="!hasDisposalPolicy"
+            min="0"
+          />
+          개월
         </div>
       </div>
       <div class="sub-header">데이터 백업 기간 설정</div>
       <div class="save-setting">
+        <div class="policy-box">
+          <div>정책</div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="hasBackupPolicy = false"
+            v-bind:class="{
+              unclicked: hasBackupPolicy != false,
+            }"
+          >
+            정책없음
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="hasBackupPolicy = true"
+            v-bind:class="{
+              unclicked: hasBackupPolicy != true,
+            }"
+          >
+            기간설정
+          </button>
+        </div>
         <div class="start-box">
           <div>시작일</div>
-          <input type="date" v-model="currStart" />
+          <input
+            type="date"
+            v-model="backupStartDate"
+            :disabled="!hasBackupPolicy"
+          />
         </div>
 
         <div class="period-box">
           <div>기간</div>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currPeriod = 1"
-            v-bind:class="{ unclicked: currPeriod != 1 }"
-          >
-            1년
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currPeriod = 2"
-            v-bind:class="{ unclicked: currPeriod != 2 }"
-          >
-            2년
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="currPeriod = 3"
-            v-bind:class="{ unclicked: currPeriod != 3 }"
-          >
-            3년
-          </button>
-        </div>
-        <div class="save-box">
-          <div>저장</div>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="showDeleteModal = true"
-          >
-            저장하기
-          </button>
+          <input
+            type="number"
+            class="number-input"
+            v-model="backupPeriod"
+            :disabled="!hasBackupPolicy"
+            min="0"
+          />
+          개월
         </div>
       </div>
       <div class="sub-header">데이터 분석 기간 설정</div>
@@ -144,51 +149,131 @@
             Yearly
           </button>
         </div>
-        <div class="save-box">
-          <div>저장</div>
-          <button
-            type="button"
-            class="btn btn-primary"
-            @click="showDeleteModal = true"
-          >
-            저장하기
-          </button>
-        </div>
       </div>
     </div>
     <SaveModal
-      v-if="showDeleteModal"
-      @close="showDeleteModal = false"
-      @save="saveSafeOption"
+      v-if="showSaveModal"
+      @close="showSaveModal = false"
+      @save="saveAll"
     ></SaveModal>
   </div>
 </template>
 
+<script src="@/input.js"></script>
 <script>
 import SaveModal from "../components/SaveModal.vue";
+import axios from "axios";
 export default {
   components: {
     SaveModal,
   },
   data() {
     return {
-      showDeleteModal: false,
-      currStart: null,
-      currPeriod: 1,
-      currCondition: 0,
+      showSaveModal: false,
+      hasDisposalPolicy: false,
+      disposalPeriod: "",
+      backupStartDate: "",
+      hasBackupPolicy: false,
+      backupPeriod: "",
       currAnalPeriod: 1,
-      saveCondition: [
-        { id: 0, name: "백업" },
-        { id: 1, name: "폐기" },
-      ],
-      currSaveCondition: [{ id: 1, name: "폐기" }],
     };
   },
-  methods: {
-    saveSafeOption() {
-      console.log(this.currStart);
-      console.log(this.currPeriod);
+  watch: {
+    disposalPeriod(val) {
+      console.log("h");
+      this.disposalPeriod = this.disposalPeriod.replace(
+        /[^0-9]/g,
+        ""
+      );
     },
+  },
+  methods: {
+    saveAll() {
+      this.updateDisposalPeriod();
+      this.updateBackupPeriod();
+    },
+    getBackupPeriod() {
+      axios
+        .get(
+          "http://163.180.117.160:8080/retention/period?condition=backup"
+        )
+        .then((res) => {
+          if (res.data.period == "no policy") {
+            this.hasBackupPolicy = false;
+          } else {
+            this.hasBackupPolicy = true;
+            this.backupStartDate = res.data.startDate;
+            this.backupPeriod = Number(
+              res.data.period.split(" ")[0]
+            );
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+    getDisposalPeriod() {
+      axios
+        .get(
+          "http://163.180.117.160:8080/retention/period?condition=disposal"
+        )
+        .then((res) => {
+          if (res.data.period == "no policy") {
+            this.hasDisposalPolicy = false;
+          } else {
+            this.hasDisposalPolicy = true;
+            this.disposalPeriod =
+              res.data.period.split(" ")[0];
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+    updateDisposalPeriod() {
+      var data = { condition: "disposal" };
+      if (!this.hasDisposalPolicy) {
+        data = { ...data, period: "no policy" };
+      } else {
+        data = {
+          ...data,
+          period: this.disposalPeriod + " months",
+        };
+      }
+
+      axios
+        .put(
+          "http://163.180.117.160:8080/retention/period",
+          data
+        )
+        .then(() => {
+          this.getDisposalPeriod();
+        })
+        .catch((err) => console.log(err));
+    },
+
+    updateBackupPeriod() {
+      var data = { condition: "backup" };
+      if (!this.hasBackupPolicy) {
+        data = { ...data, period: "no policy" };
+      } else {
+        data = {
+          ...data,
+          period: this.backupPeriod + " months",
+          startDate: this.backupStartDate,
+        };
+      }
+
+      axios
+        .put(
+          "http://163.180.117.160:8080/retention/period",
+          data
+        )
+        .then(() => {
+          this.getBackupPeriod();
+        })
+        .catch((err) => console.log(err));
+    },
+  },
+  mounted() {
+    this.getBackupPeriod();
+    this.getDisposalPeriod();
   },
 };
 </script>
@@ -205,6 +290,9 @@ export default {
 .table-main__content-intro {
   color: #8a99b5b3;
   margin-left: 25px;
+}
+.table-main__content {
+  display: flex;
 }
 .save-setting,
 .analysis-setting {
@@ -232,7 +320,8 @@ button {
   background-color: #4978d4 !important;
 }
 .start-box {
-  margin: 0px 30px;
+  margin-left: 40px;
+  margin-right: 10px;
 }
 .start-box input {
   width: 150px;
@@ -240,10 +329,11 @@ button {
   border: none;
   padding: 5px;
 }
-.period-box {
-  margin: 0 15px;
+.policy-box {
+  margin-left: 40px;
 }
-.period-box button {
+
+.policy-box button {
   width: 80px;
   margin-right: 10px;
   border: none;
@@ -257,10 +347,17 @@ button {
   border: none;
 }
 
-.save-box {
-  margin-left: 200px;
+.period-box {
+  margin-left: 40px;
 }
+
+.save-box {
+  position: absolute;
+  right: 100px;
+}
+
 .save-box button {
+  width: 150px;
   border: none;
 }
 
@@ -270,11 +367,31 @@ button {
 .analysis-setting .period-box {
   margin-left: 30px;
 }
+.analysis-setting .period-box {
+  margin-left: 40px;
+}
 .analysis-setting .period-box button {
   width: 118px;
+  margin-right: 15px;
 }
 
-.analysis-setting .save-box {
-  margin-left: 370px;
+.number-input {
+  width: 50px;
+  height: 35px;
+}
+button,
+input {
+  border: none !important;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
+}
+input {
+  background-color: rgb(240, 240, 240);
+  border-radius: 3px;
+  border: none;
+}
+input:disabled {
+  background-color: gray;
+  border-radius: 3px;
+  border: none;
 }
 </style>
