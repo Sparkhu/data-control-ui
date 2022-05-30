@@ -8,7 +8,7 @@
           HDFS 데이터의 보존 기간 및 분석 기간을 설정합니다.
         </div>
         <div class="save-box">
-          <div>전체 저장</div>
+          <div class="save-label">전체 저장</div>
           <button
             type="button"
             class="btn btn-primary"
@@ -17,6 +17,11 @@
           >
             저장하기
           </button>
+          <input
+            class="error"
+            v-model="errorMsg"
+            disabled
+          />
         </div>
       </div>
 
@@ -53,7 +58,7 @@
             class="number-input"
             v-model="disposalPeriod"
             :disabled="!hasDisposalPolicy"
-            min="0"
+            minlength="1"
           />
           개월
         </div>
@@ -89,7 +94,6 @@
             type="date"
             v-model="backupStartDate"
             :disabled="!hasBackupPolicy"
-            :class="{ invalid: validError }"
           />
         </div>
 
@@ -173,12 +177,16 @@ export default {
     return {
       showSaveModal: false,
       hasDisposalPolicy: false,
-      disposalPeriod: "",
-      backupStartDate: "",
+      disposalPeriod: "2",
+      backupStartDate: "2022-01-01",
       hasBackupPolicy: false,
-      backupPeriod: "",
+      backupPeriod: "1",
       currAnalPeriod: 1,
       validError: false,
+      backupPeriodError: false,
+      backupStartDateError: false,
+      disposalPeriodError: false,
+      errorMsg: "",
     };
   },
   watch: {
@@ -187,19 +195,72 @@ export default {
         /[^0-9]/g,
         ""
       );
+      if (
+        this.hasDisposalPolicy &&
+        this.disposalPeriod === ""
+      ) {
+        this.disposalPeriodError = true;
+      } else {
+        this.disposalPeriodError = false;
+      }
     },
     backupPeriod(val) {
       this.backupPeriod = this.backupPeriod.replace(
         /[^0-9]/g,
         ""
       );
+      if (
+        this.hasBackupPolicy &&
+        this.backupPeriod === ""
+      ) {
+        this.backupPeriodError = true;
+      } else {
+        this.backupPeriodError = false;
+      }
+    },
+    hasBackupPolicy(val) {
+      if (!this.hasBackupPolicy) {
+        this.backupPeriod = "1";
+        this.backupStartDate = "2022-01-01";
+      }
+    },
+    hasDisposalPolicy(val) {
+      if (!this.hasDisposalPolicy) {
+        this.disposalPeriod = "1";
+      }
     },
     backupStartDate(val) {
-      console.log(new Date());
       if (new Date(this.backupStartDate) > new Date()) {
-        this.validError = true;
+        this.backupStartDateError = true;
+      } else if (this.backupStartDate === "") {
+        this.backupStartDateError = true;
       } else {
-        this.validError = false;
+        this.backupStartDateError = false;
+      }
+    },
+    backupStartDateError(val) {
+      this.validError =
+        this.backupStartDateError ||
+        this.backupPeriodError ||
+        this.disposalPeriodError;
+    },
+    backupPeriodError(val) {
+      this.validError =
+        this.backupStartDateError ||
+        this.backupPeriodError ||
+        this.disposalPeriodError;
+    },
+    disposalPeriodError(val) {
+      this.validError =
+        this.backupStartDateError ||
+        this.backupPeriodError ||
+        this.disposalPeriodError;
+    },
+    validError(val) {
+      if (this.validError) {
+        this.errorMsg = "입력값을 확인해주세요.";
+      } else {
+        this.errorMsg = "";
       }
     },
   },
@@ -326,7 +387,7 @@ export default {
   background-color: #667693;
 }
 .sub-header {
-  margin-top: 20px;
+  margin-top: 24px;
   margin-left: 60px;
   font-size: 17px;
   margin-bottom: 5px;
@@ -373,6 +434,8 @@ button {
 
 .save-box button {
   width: 150px;
+  margin: 0px;
+  height: 35px;
   border: none;
 }
 
@@ -411,5 +474,19 @@ input:disabled {
 }
 .invalid {
   color: red;
+}
+
+.save-label {
+  font-size: 14px;
+}
+.error {
+  display: block;
+  background-color: transparent;
+  height: 25px;
+  font-size: 15px;
+  color: red;
+}
+.error:disabled {
+  background-color: transparent;
 }
 </style>
