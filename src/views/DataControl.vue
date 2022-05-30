@@ -94,7 +94,7 @@
         <div class="period-box">
           <div>기간</div>
           <input
-            type="number"
+            type="text"
             class="number-input"
             v-model="backupPeriod"
             :disabled="!hasBackupPolicy"
@@ -180,8 +180,13 @@ export default {
   },
   watch: {
     disposalPeriod(val) {
-      console.log("h");
       this.disposalPeriod = this.disposalPeriod.replace(
+        /[^0-9]/g,
+        ""
+      );
+    },
+    backupPeriod(val) {
+      this.backupPeriod = this.backupPeriod.replace(
         /[^0-9]/g,
         ""
       );
@@ -203,9 +208,8 @@ export default {
           } else {
             this.hasBackupPolicy = true;
             this.backupStartDate = res.data.startDate;
-            this.backupPeriod = Number(
-              res.data.period.split(" ")[0]
-            );
+            this.backupPeriod =
+              res.data.period.split(" ")[0];
           }
         })
         .catch((err) => console.log(err));
