@@ -13,6 +13,7 @@
             type="button"
             class="btn btn-primary"
             @click="showSaveModal = true"
+            :disabled="validError"
           >
             저장하기
           </button>
@@ -88,6 +89,7 @@
             type="date"
             v-model="backupStartDate"
             :disabled="!hasBackupPolicy"
+            :class="{ invalid: validError }"
           />
         </div>
 
@@ -176,6 +178,7 @@ export default {
       hasBackupPolicy: false,
       backupPeriod: "",
       currAnalPeriod: 1,
+      validError: false,
     };
   },
   watch: {
@@ -190,6 +193,14 @@ export default {
         /[^0-9]/g,
         ""
       );
+    },
+    backupStartDate(val) {
+      console.log(new Date());
+      if (new Date(this.backupStartDate) > new Date()) {
+        this.validError = true;
+      } else {
+        this.validError = false;
+      }
     },
   },
   methods: {
@@ -397,5 +408,8 @@ input:disabled {
   background-color: gray;
   border-radius: 3px;
   border: none;
+}
+.invalid {
+  color: red;
 }
 </style>
